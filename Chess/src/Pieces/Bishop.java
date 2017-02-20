@@ -58,10 +58,11 @@ public class Bishop extends Piece{
 	public Icon getIcon(Color color){
 		Icon icon;
 		if(color == Color.WHITE){
-			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteBishop.png");
+
+			icon = new ImageIcon("src/game/images/whiteBishop.png");
 		}
 		else{
-			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackBishop.png");
+			icon = new ImageIcon("src/game/images/blackBishop.png");
 		}
 		return icon;
 	}

@@ -36,10 +36,10 @@ public class King extends Piece{
 	public Icon getIcon(Color color){
 		Icon icon;
 		if(color == Color.WHITE){
-			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteKing.png");
+			icon = new ImageIcon("src/game/images/whiteKing.png");
 		}
 		else{
-			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackKing.png");
+			icon = new ImageIcon("src/game/images/blackKing.png");
 		}
 		return icon;
 	}
