@@ -3,6 +3,7 @@ import Pieces.*;
 import javafx.scene.control.ToolBar;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.applet.Applet;
 import java.awt.Button;
 import java.awt.*;
@@ -32,9 +33,17 @@ public class Chessboard extends Applet {
     boolean isStartingClick = true;
     boolean isWhiteTurn = true;
 
+    /**
+     * Constructor for a Chessboard GUI
+     */
+
     public Chessboard(){
         initialize();
     }
+
+    /**
+     * Initializes the board GUI and all the required material
+     */
 
     public void initialize(){
         toolGUI.setMinimumSize(new Dimension(100,75));
@@ -117,6 +126,7 @@ public class Chessboard extends Applet {
                     }
 
                 }
+                board[j][i].setBorder(new LineBorder(Color.BLACK));
                 int buttonI = i;
                 int buttonJ = j;
                 ActionListener test = new ActionListener() {
@@ -134,7 +144,9 @@ public class Chessboard extends Applet {
         chessBoard.setPreferredSize(new Dimension(800,800));// changed it to preferredSize, Thanks!
     }
 
-
+    /**
+     * Undos the previous move, all the way to the beginning
+     */
 
     private void undoOneMove(){
         if(history.size()==0) {
@@ -180,17 +192,39 @@ public class Chessboard extends Applet {
     }
 
     /**
+     * Handles the highlighting
+     * @param board of the current game
+     */
+    private void moveHandleHighlight( Board board) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if(isStartingClick && new Move(startX,startY,i,j).canExecute(board)){
+                    this.board[i][j].setBorder(new LineBorder(Color.GREEN));
+                }
+                else if(!isStartingClick){
+                    this.board[i][j].setBorder(new LineBorder(Color.BLACK));
+                }
+            }
+        }
+    }
+
+    /**
      * Handles the button click
      */
     public void buttonClick(int y, int x, Board board){
-        System.out.println("x:" + x + "y:" + y);
 
-        System.out.println("boolean:" + isStartingClick);
+        //System.out.println("x:" + x + "y:" + y);
+
+        //System.out.println("boolean:" + isStartingClick);
         if(isStartingClick){
-            if(board.getPiece(x,y)!=null) {
-                startX = x;
-                startY = y;
-                isStartingClick = !isStartingClick;
+            Piece currentPiece = board.getPiece(x,y);
+            if(currentPiece!=null) {
+                if((currentPiece.getColor() == WHITE && board.getWhoseTurn()) || (currentPiece.getColor() == BLACK && !board.getWhoseTurn())) {
+                    startX = x;
+                    startY = y;
+                    moveHandleHighlight(board);
+                    isStartingClick = !isStartingClick;
+                }
             }
         }
         else{
@@ -235,11 +269,16 @@ public class Chessboard extends Applet {
             else{
                 warning.setText("Illegal Move");
             }
+            moveHandleHighlight(board);
             isStartingClick = !isStartingClick;
 
         }
         changeTurnText();
     }
+
+    /**
+     * changes player's turn on GUI
+     */
 
     private void changeTurnText(){
         String whoseTurn = "";
@@ -267,20 +306,34 @@ public class Chessboard extends Applet {
         }
     }
 
+    /**
+     * updates the current move
+     */
+
     private void boardUpdateHelper(){
         fullBoardUpdateHelper(currentMove.startX,currentMove.startY);
         fullBoardUpdateHelper(currentMove.endX,currentMove.endY);
     }
 
-    private void fullBoardUpdateHelper(int i, int j){
-        Piece curPiece = game.getPiece(i,j);
+    /**
+     * Helper function that updates the currect square
+     * @param x coordinate of the square updating
+     * @param y coordinate of the square updating
+     */
+
+    private void fullBoardUpdateHelper(int x, int y){
+        Piece curPiece = game.getPiece(x,y);
         if(curPiece != null ) {
-            board[i][j].setIcon(curPiece.getIcon(curPiece.getColor()));
+            board[x][y].setIcon(curPiece.getIcon(curPiece.getColor()));
         }
         else{
-            board[i][j].setIcon(new ImageIcon());
+            board[x][y].setIcon(new ImageIcon());
         }
     }
+
+    /**
+     * An update that updates the visuals of the whole board
+     */
 
     private void fullBoardUpdate(){
 
@@ -290,6 +343,10 @@ public class Chessboard extends Applet {
            }
        }
     }
+
+    /**
+     * Sets up the normal board
+     */
 
     private void setUpBoard(){
         Piece whitePawn = new Pawn(WHITE);
@@ -302,6 +359,10 @@ public class Chessboard extends Applet {
         }
         setUpBoardHelper();
     }
+
+    /**
+     * Sets a game of the custom chess
+     */
 
     private void setUpBoardTwo() {
         Piece whitePawn = new Pawn(WHITE);
@@ -346,9 +407,9 @@ public class Chessboard extends Applet {
         game.place(whiteRook,0,0);
         game.place(whiteRook,7,0);
         game.place(whiteKnight,6,0);
-       // game.place(whiteKnight,1,0);
+        game.place(whiteKnight,1,0);
         game.place(whiteBishop,5,0);
-       // game.place(whiteBishop,2,0);
+        game.place(whiteBishop,2,0);
         game.place(whiteKing,3,0);
         game.place(whiteQueen,4,0);
 
@@ -363,13 +424,25 @@ public class Chessboard extends Applet {
         fullBoardUpdate();
     }
 
+    /**
+     * Getter for the GUI commponent
+     * @return the GUI component
+     */
     public final JComponent getGui() {
         return chessBoard;
     }
 
+    /**
+     * Getter for the Jtoolbar component
+     * @return the Jtoolbar component
+     */
     public final JComponent getToolGUI() { return toolGUI; }
 
 
+    /**
+     * Runs the game loop
+     * @param args arbitrary
+     */
 
         public static void main(String[] args){
         Runnable r = new Runnable() {
