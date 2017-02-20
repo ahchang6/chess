@@ -18,23 +18,26 @@ public class Pawn extends Piece{
 		if(direction == 0){
 			return false;
 		}
+
 		if(color == BLACK && direction == 1)
 			return false;
 		if(color == WHITE && direction == -1)
 			return false;
 		if(color == BLACK && move.startY()==6 && direction == -1){
-			if(!blocked(move, board) && move.endY()==4 && move.startX() == move.endX())
+			if((!blocked(move, board) && move.endY()==4 && move.startX() == move.endX() )||( move.startX() == move.endX() && move.endY()==5))
 				return true;
 		}
 		if(color == WHITE && move.startY()==1 && direction == 1){
-			if(!blocked(move, board) && move.endY()==3 && move.startX() == move.endX())
+            if((!blocked(move, board) && move.endY()==3 && move.startX() == move.endX() )||( move.startX() == move.endX() && move.endY()==2))
 				return true;
 		}
-		if(direction == -1 && move.startX()==move.endX() && move.startY()-1!=move.endY())
-			return false;
+        if(direction == -1 && move.startX()==move.endX() && move.startY()-1==move.endY())
+            return true;
+        if(direction == 1 && move.startX()==move.endX() && move.startY()+1==move.endY())
+            return true;
+		if(move.startX()!=move.startX() || move.startY() !=move.endY())
+		    return false;
 
-		if(direction == 1 && move.startX()==move.endX() && move.startY()+1!=move.endY())
-			return false;
 		if(blocked(move, board)){
 			return false;
 		}

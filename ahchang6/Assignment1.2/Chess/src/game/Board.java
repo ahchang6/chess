@@ -230,16 +230,15 @@ public class Board{
 		ArrayList<Piece> piecesChecking = checkPiecesChecking(x,y,color);
 		if(piecesChecking.size()>1)
 			return true;
+/*
+		Piece pieceCheck = piecesChecking.get(0);
 
-		//Piece pieceCheck = piecesChecking.get(0);
 
-		/*
 		if(pieceCheck.canBeBlocked(x,y,color,this)){
 
 			return false;
 		}
-		*/
-
+*/
 
 
 
