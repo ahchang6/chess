@@ -63,13 +63,14 @@ public class Move{
 
     private boolean specialAction(Board board){
         if(actionCode == 0) {
-            if (board.getPiece(4, 0) instanceof King && board.getPiece(7, 0) instanceof Rook) {
-                if (board.getPiece(4, 0).getColor() == WHITE && board.getPiece(7, 0).getColor() == WHITE) {
-                    if (board.getPiece(5, 0) == null && board.getPiece(6, 0) == null) {
-                        if (!board.hasMoved(4, 0) && !board.hasMoved(7, 0)) {
-                            if (!board.checkCheck(5, 0, WHITE) && !board.checkCheck(6, 0, WHITE)) {
-                                board.place(board.remove(4, 0), 6, 0);
-                                board.place(board.remove(7, 0), 5, 0);
+            if (board.getPiece(3, 0) instanceof King && board.getPiece(0, 0) instanceof Rook) {
+                if (board.getPiece(3, 0).getColor() == WHITE && board.getPiece(0, 0).getColor() == WHITE) {
+                    if (board.getPiece(2, 0) == null && board.getPiece(1, 0) == null) {
+                        if (!board.hasMoved(3, 0) && !board.hasMoved(0, 0)) {
+                            if (!board.checkCheck(2, 0, WHITE) && !board.checkCheck(1, 0, WHITE)) {
+                                board.place(board.remove(0, 0), 2, 0);
+                                board.place(board.remove(3, 0), 1, 0);
+
                                 return true;
                             }
                         }
@@ -78,13 +79,13 @@ public class Move{
             }
         }
         if(actionCode == 1) {
-            if (board.getPiece(4, 0) instanceof King && board.getPiece(0, 0) instanceof Rook) {
-                if(board.getPiece(4,0).getColor() == WHITE && board.getPiece(0,0).getColor() == WHITE){
-                    if(board.getPiece(1,0) == null && board.getPiece(2,0) == null && board.getPiece(3,0) == null){
-                        if (!board.hasMoved(4, 0) && !board.hasMoved(0, 0)) {
-                            if (!board.checkCheck(1, 0, WHITE) && !board.checkCheck(2, 0, WHITE) && !board.checkCheck(3, 0, WHITE)) {
-                                board.place(board.remove(4, 0), 2, 0);
-                                board.place(board.remove(0, 0), 3, 0);
+            if (board.getPiece(4, 0) instanceof King && board.getPiece(7, 0) instanceof Rook) {
+                if(board.getPiece(4,0).getColor() == WHITE && board.getPiece(7,0).getColor() == WHITE){
+                    if(board.getPiece(1,0) == null && board.getPiece(5,0) == null && board.getPiece(4,0) == null){
+                        if (!board.hasMoved(4, 0) && !board.hasMoved(7, 0)) {
+                            if (!board.checkCheck(1, 7, WHITE) && !board.checkCheck(5, 7, WHITE) && !board.checkCheck(4, 7, WHITE)) {
+                                board.place(board.remove(4, 0), 5, 0);
+                                board.place(board.remove(7, 0), 4, 0);
                                 return true;
                             }
                         }
@@ -93,13 +94,13 @@ public class Move{
             }
         }
         if(actionCode == 3) {
-            if (board.getPiece(4, 7) instanceof King && board.getPiece(7, 7) instanceof Rook) {
-                if(board.getPiece(4,7).getColor() == BLACK && board.getPiece(7,7).getColor() == BLACK) {
-                    if (board.getPiece(5, 7) == null && board.getPiece(6, 7) == null) {
-                        if (!board.hasMoved(4, 7) && !board.hasMoved(7, 7)) {
-                            if (!board.checkCheck(5, 7, BLACK) && !board.checkCheck(6, 7, BLACK)) {
-                                board.place(board.remove(4, 7), 6, 7);
-                                board.place(board.remove(7, 7), 5, 7);
+            if (board.getPiece(3, 7) instanceof King && board.getPiece(0, 7) instanceof Rook) {
+                if(board.getPiece(3,7).getColor() == BLACK && board.getPiece(0,7).getColor() == BLACK) {
+                    if (board.getPiece(2, 7) == null && board.getPiece(1, 7) == null) {
+                        if (!board.hasMoved(3, 7) && !board.hasMoved(0, 7)) {
+                            if (!board.checkCheck(2, 0, BLACK) && !board.checkCheck(1, 0, BLACK)) {
+                                board.place(board.remove(3, 7), 1, 7);
+                                board.place(board.remove(0, 7), 2, 7);
                                 return true;
                             }
                         }
@@ -108,13 +109,13 @@ public class Move{
             }
         }
         if(actionCode == 4) {
-            if (board.getPiece(4, 7) instanceof King && board.getPiece(0, 7) instanceof Rook) {
-                if(board.getPiece(4,7).getColor() == BLACK && board.getPiece(0,7).getColor() == BLACK) {
-                    if (board.getPiece(1, 7) == null && board.getPiece(2, 7) == null && board.getPiece(3, 7) == null) {
-                        if (!board.hasMoved(4, 7) && !board.hasMoved(0, 7)) {
-                            if (!board.checkCheck(1, 7, BLACK) && !board.checkCheck(2, 7, BLACK) && !board.checkCheck(3, 7, BLACK)) {
-                                board.place(board.remove(4, 7), 2, 7);
-                                board.place(board.remove(0, 7), 3, 7);
+            if (board.getPiece(3, 7) instanceof King && board.getPiece(7, 7) instanceof Rook) {
+                if(board.getPiece(3,7).getColor() == BLACK && board.getPiece(7,7).getColor() == BLACK) {
+                    if (board.getPiece(1, 7) == null && board.getPiece(5, 7) == null && board.getPiece(4 , 7) == null) {
+                        if (!board.hasMoved(3, 7) && !board.hasMoved(7, 7)) {
+                            if (!board.checkCheck(1, 7, BLACK) && !board.checkCheck(5, 7, BLACK) && !board.checkCheck(4 , 7, BLACK)) {
+                                board.place(board.remove(3, 7), 5, 7);
+                                board.place(board.remove(7, 7), 4 , 7);
                                 return true;
                             }
                         }
@@ -124,6 +125,11 @@ public class Move{
         }
         return false;
     }
+
+    public int getActionCode(){
+        return actionCode;
+    }
+
 
     public boolean canExecute(Board board){
         if (endX < 0 || endY < 0) {

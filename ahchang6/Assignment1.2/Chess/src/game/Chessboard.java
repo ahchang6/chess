@@ -20,6 +20,7 @@ public class Chessboard extends Applet {
     private final JPanel chessBoard = new JPanel(new GridLayout(8,8,0,0));
     private final JToolBar toolGUI = new JToolBar("TaskBar", JToolBar.VERTICAL);
     private final JLabel playerTurn = new JLabel("White's turn.");
+    private final JLabel warning = new JLabel("");
 
     JButton[][] board;
 
@@ -63,6 +64,17 @@ public class Chessboard extends Applet {
                 }
             }
         });
+        JButton newGamePlus = new JButton("Crazy Game");
+        newGamePlus.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearBoard();
+                setUpBoardTwo();
+                if(!game.getWhoseTurn()){
+                    game.changeTurn();
+                }
+            }
+        });
 
 
         JButton undo = new JButton("Undo");
@@ -73,8 +85,10 @@ public class Chessboard extends Applet {
             }
         });
         toolGUI.add(newGame);
+        toolGUI.add(newGamePlus);
         toolGUI.add(undo);
         toolGUI.add(playerTurn);
+        toolGUI.add(warning);
         toolGUI.setOrientation(JToolBar.HORIZONTAL);
 
 
@@ -131,18 +145,38 @@ public class Chessboard extends Applet {
         currentMove = history.get(currentTurn);
         history.remove(currentTurn);
         currentTurn--;
+        int actionCode = currentMove.getActionCode();
 
+        if(actionCode==-1) {
 
-        Piece pieceRemovedLast = currentMove.getPieceRemoved();
-        Piece revertPiece = game.remove(currentMove.endX(),currentMove.endY());
-        if(pieceRemovedLast != null){
-           game.place(pieceRemovedLast,currentMove.endX(),currentMove.endY());
+            Piece pieceRemovedLast = currentMove.getPieceRemoved();
+            Piece revertPiece = game.remove(currentMove.endX(), currentMove.endY());
+            if (pieceRemovedLast != null) {
+                game.place(pieceRemovedLast, currentMove.endX(), currentMove.endY());
+            }
+
+            game.place(revertPiece, currentMove.startX(), currentMove.startY());
+
+        }
+        else if(actionCode == 0){
+            game.place(game.remove(1, 0), 3, 0);
+            game.place(game.remove(2, 0), 0, 0);
+        }
+        else if(actionCode == 1){
+            game.place(game.remove(5, 0), 3, 0);
+            game.place(game.remove(4, 0), 7, 0);
+        }
+        else if(actionCode == 3){
+            game.place(game.remove(1, 7), 3, 7);
+            game.place(game.remove(2, 7), 0, 7);
+        }
+        else if(actionCode == 4){
+            game.place(game.remove(5, 7), 3, 7);
+            game.place(game.remove(4, 7), 7, 7);
         }
         game.changeTurn();
-        game.place(revertPiece,currentMove.startX(),currentMove.startY());
+        changeTurnText();
         fullBoardUpdate();
-
-
     }
 
     /**
@@ -160,16 +194,54 @@ public class Chessboard extends Applet {
             }
         }
         else{
-            currentMove = new Move(startX,startY,x,y);
+
+            if (startX == 3 && startY==0 && game.getPiece(startX, startY) instanceof King && game.getPiece(startX, startY).getColor() == WHITE) {
+                System.out.println("entered here" + 1);
+                if (x == 1 && y == 0) {
+                    currentMove = new Move(0);
+                }
+            } else if (startX == 3 && startY==0 && game.getPiece(startX, startY) instanceof King && game.getPiece(startX, startY).getColor() == WHITE) {
+                System.out.println("entered here" + 2);
+                if (x == 6 && y == 0) {
+                    currentMove = new Move(1);
+                }
+            }
+            else if (startX == 3 && startY == 7 && game.getPiece(startX, startY) instanceof King && game.getPiece(startX, startY).getColor() == BLACK) {
+                System.out.println("entered here" + 3);
+                if (x == 1 && y == 7) {
+                    currentMove = new Move(3);
+                }
+            } else if (startX == 3 && startY == 7 && game.getPiece(startX, startY) instanceof King && game.getPiece(startX, startY).getColor() == BLACK) {
+                System.out.println("entered here" + 4);
+                if (x == 6 && y == 7) {
+                    currentMove = new Move(4);
+                }
+            }
+            else {
+                currentMove = new Move(startX, startY, x, y);
+            }
             if(currentMove.execute(game)){
+                System.out.println(currentMove.getActionCode());
                 history.add(currentMove);
                 currentTurn++;
-                boardUpdateHelper();
+                if(currentMove.getActionCode()!=-1){
+                    fullBoardUpdate();
+                }
+                else {
+                    boardUpdateHelper();
+                }
+                warning.setText("");
+            }
+            else{
+                warning.setText("Illegal Move");
             }
             isStartingClick = !isStartingClick;
 
         }
+        changeTurnText();
+    }
 
+    private void changeTurnText(){
         String whoseTurn = "";
         if(game.getWhoseTurn()) {
             whoseTurn += "White";
@@ -179,7 +251,6 @@ public class Chessboard extends Applet {
         }
         whoseTurn += "'s turn.";
         playerTurn.setText(whoseTurn);
-
     }
     /**
      * Initializes the GUI of chess game
@@ -220,49 +291,64 @@ public class Chessboard extends Applet {
        }
     }
 
-    private void setUpBoardTwo() {
-        Piece whitePawn = new Pawn(WHITE);
-        game.place(whitePawn,1,4);
-        fullBoardUpdate();
-    }
-    /**
-     * Sets up board to a regular chess game
-     */
     private void setUpBoard(){
-
-
         Piece whitePawn = new Pawn(WHITE);
-        Piece whiteRook = new Rook(WHITE);
-        Piece whiteKnight = new Knight(WHITE);
-        Piece whiteBishop = new Bishop(WHITE);
-        Piece whiteKing = new King(WHITE);
-        Piece whiteQueen = new Queen(WHITE);
         Piece blackPawn = new Pawn(BLACK);
-        Piece blackRook = new Rook(BLACK);
-        Piece blackKnight = new Knight(BLACK);
-        Piece blackBishop = new Bishop(BLACK);
-        Piece blackKing = new King(BLACK);
-        Piece blackQueen = new Queen(BLACK);
         for(int i = 0; i<8;i++) {
             game.place(blackPawn,i,6);
         }
         for(int i = 0; i<8;i++) {
             game.place(whitePawn,i,1);
         }
-        /*
-        Icon temp = new ImageIcon();
+        setUpBoardHelper();
+    }
 
-       board[4][1]=temp;
-        //board[4][3]=whitePawn;
+    private void setUpBoardTwo() {
+        Piece whitePawn = new Pawn(WHITE);
+        Piece blackPawn = new Pawn(BLACK);
+        Piece whiteCannon = new Cannon(WHITE);
+        Piece blackCannon = new Cannon(BLACK);
+        Piece whiteJester = new Jester(WHITE);
+        Piece blackJester = new Jester(BLACK);
+        for(int i = 0; i<8;i++) {
+            if(i == 3 || i == 4)
+                game.place(blackPawn,i,5);
+            game.place(blackPawn,i,6);
+        }
+        for(int i = 0; i<8;i++) {
+            if(i == 3 || i == 4)
+                game.place(whitePawn,i,2);
+            game.place(whitePawn,i,1);
+        }
+        game.place(whiteCannon,3,1);
+        game.place(blackCannon,3,6);
+        game.place(whiteJester,4,1);
+        game.place(blackJester,4,6);
+        setUpBoardHelper();
+    }
+    /**
+     * Sets up board to a regular chess game
+     */
+    private void setUpBoardHelper(){
 
-        board[3][6]=temp;
-        */
+
+        Piece whiteRook = new Rook(WHITE);
+        Piece whiteKnight = new Knight(WHITE);
+        Piece whiteBishop = new Bishop(WHITE);
+        Piece whiteKing = new King(WHITE);
+        Piece whiteQueen = new Queen(WHITE);
+        Piece blackRook = new Rook(BLACK);
+        Piece blackKnight = new Knight(BLACK);
+        Piece blackBishop = new Bishop(BLACK);
+        Piece blackKing = new King(BLACK);
+        Piece blackQueen = new Queen(BLACK);
+
         game.place(whiteRook,0,0);
         game.place(whiteRook,7,0);
         game.place(whiteKnight,6,0);
-        game.place(whiteKnight,1,0);
+       // game.place(whiteKnight,1,0);
         game.place(whiteBishop,5,0);
-        game.place(whiteBishop,2,0);
+       // game.place(whiteBishop,2,0);
         game.place(whiteKing,3,0);
         game.place(whiteQueen,4,0);
 
