@@ -4,6 +4,8 @@ package Pieces;
 import game.Board;
 import game.Move;
 
+import javax.swing.*;
+
 /**
  * Created by ahchang6 on 2/9/17.
  *
@@ -67,5 +69,15 @@ public class Cannon extends Piece {
     public boolean blocked(Move move, Board board){
         Piece rook = new Rook(color);
         return rook.blocked(move,board);
+    }
+    public Icon getIcon(Color color){
+        Icon icon;
+        if(color == Color.WHITE){
+            icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteBishop.png");
+        }
+        else{
+            icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackBishop.png");
+        }
+        return icon;
     }
 }

@@ -3,6 +3,8 @@ package Pieces;
 import game.Board;
 import game.Move;
 
+import javax.swing.*;
+
 
 public class Knight extends Piece{
 	public Knight(Color color){
@@ -30,6 +32,16 @@ public class Knight extends Piece{
 
 	public boolean canCapture(Move move, Board board){
 		return canMoveTo(move, board);
+	}
+	public Icon getIcon(Color color){
+		Icon icon;
+		if(color == Color.WHITE){
+			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteKnight.png");
+		}
+		else{
+			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackKnight.png");
+		}
+		return icon;
 	}
 
 }

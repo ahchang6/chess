@@ -3,6 +3,8 @@ package Pieces;
 import game.Board;
 import game.Move;
 
+import javax.swing.*;
+
 import static Pieces.Piece.Color.BLACK;
 import static Pieces.Piece.Color.WHITE;
 
@@ -44,6 +46,17 @@ public class Queen extends Piece{
 		}
 		*/
 return false;
+	}
+
+	public Icon getIcon(Color color){
+		Icon icon;
+		if(color == Color.WHITE){
+			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteQueen.png");
+		}
+		else{
+			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackQueen.png");
+		}
+		return icon;
 	}
 
 }
