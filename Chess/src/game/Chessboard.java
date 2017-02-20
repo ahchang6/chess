@@ -1,15 +1,12 @@
 package game;
 import Pieces.*;
-import javafx.scene.control.ToolBar;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.applet.Applet;
-import java.awt.Button;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.ArrayList;
 
 import static Pieces.Piece.Color.BLACK;
@@ -31,7 +28,6 @@ public class Chessboard extends Applet {
 
     Board game;
     boolean isStartingClick = true;
-    boolean isWhiteTurn = true;
 
     /**
      * Constructor for a Chessboard GUI
@@ -100,8 +96,6 @@ public class Chessboard extends Applet {
         toolGUI.add(warning);
         toolGUI.setOrientation(JToolBar.HORIZONTAL);
 
-
-        //chessBoard.setLayout(new GridLayout(10,10,0,0));
         board = new JButton[8][8];
 
         for(int i = 0; i< 8 ; i++) {
@@ -139,9 +133,9 @@ public class Chessboard extends Applet {
                 chessBoard.add(tempButton);
             }
         }
-        setUpBoard();
+        //setUpBoard();
 
-        chessBoard.setPreferredSize(new Dimension(800,800));// changed it to preferredSize, Thanks!
+        chessBoard.setPreferredSize(new Dimension(800,800));
     }
 
     /**
@@ -456,10 +450,7 @@ public class Chessboard extends Applet {
                 frame.add(cg.getGui(),BorderLayout.CENTER);
 
 
-                // Ensures JVM closes aframeter frame(s) closed and
-                // all non-daemon threads are frameinished
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                // See http://stackoverframelow.com/a/7143398/418556 for demo.
                 frame.setLocationByPlatform(true);
 
                 // ensures the framerame is the minimum size it needs to be
