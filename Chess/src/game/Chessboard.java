@@ -1,41 +1,90 @@
 package game;
+import Pieces.*;
+import javafx.scene.control.ToolBar;
+
 import javax.swing.*;
 import java.applet.Applet;
 import java.awt.Button;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+
+import static Pieces.Piece.Color.BLACK;
+import static Pieces.Piece.Color.WHITE;
 
 public class Chessboard extends Applet {
-    //private final JPanel gui = new JPanel(new BorderLayout(3, 3));
+    ArrayList<Move> history = new ArrayList<Move>();
+
     private final JPanel chessBoard = new JPanel(new GridLayout(8,8,0,0));
+    private final JToolBar toolGUI = new JToolBar("TaskBar", JToolBar.VERTICAL);
+    private final JLabel playerTurn = new JLabel("White's turn.");
+
     JButton[][] board;
+
+    int startX, startY;
+    int currentTurn = -1;
+    Move currentMove;
+
+    Board game;
+    boolean isStartingClick = true;
+    boolean isWhiteTurn = true;
+
     public Chessboard(){
         initialize();
     }
 
     public void initialize(){
-        /*
-        JFrame frame = new JFrame("Chess");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        */
-        //frame.setSize(new Dimension(200,200));
-        //frame.setSize(200,200);
-        //JPanel chessBoard = new JPanel();
+        toolGUI.setMinimumSize(new Dimension(100,75));
+        toolGUI.setPreferredSize(new Dimension(100,75));
+        toolGUI.setMaximumSize(new Dimension(100,75));
+        playerTurn.setMinimumSize(new Dimension(75,75));
+        playerTurn.setPreferredSize(new Dimension(75,75));
+        playerTurn.setMaximumSize(new Dimension(75,75));
+        startX = -1;
+        startY = -1;
+        game = new Board();
+
+        toolGUI.setFloatable(false);
+        chessBoard.add(toolGUI, BorderLayout.EAST);
+
+
+        toolGUI.setLayout(new GridLayout(12, 1));
+        toolGUI.setFloatable(false);
+        JButton newGame = new JButton("New Game");
+        newGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearBoard();
+                setUpBoard();
+                if(!game.getWhoseTurn()){
+                    game.changeTurn();
+                }
+            }
+        });
+
+
+        JButton undo = new JButton("Undo");
+        undo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoOneMove();
+            }
+        });
+        toolGUI.add(newGame);
+        toolGUI.add(undo);
+        toolGUI.add(playerTurn);
+        toolGUI.setOrientation(JToolBar.HORIZONTAL);
+
 
         //chessBoard.setLayout(new GridLayout(10,10,0,0));
         board = new JButton[8][8];
-        //chessBoard.setLayout(new FlowLayout()); //Centered components
-        //chessBoard.setSize(new Dimension(200,200));
-        /*
-        setLayout(new GridLayout(8,8));
-        */
+
         for(int i = 0; i< 8 ; i++) {
             for (int j = 0; j < 8; j++) {
                 int temp = i * 8 + j +1;
 
-                //ImageIcon piece = new ImageIcon(this.getClass().getResource("assets/images/blackBishop.png"));
-                //ImageIcon piece = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackBishop.png");
-                //Integer button = new Integer(temp);
                 JButton tempButton = new JButton();
                 tempButton.setPreferredSize(new Dimension(40,40));
                 board[j][i] = tempButton;
@@ -54,98 +103,199 @@ public class Chessboard extends Applet {
                     }
 
                 }
+                int buttonI = i;
+                int buttonJ = j;
+                ActionListener test = new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        buttonClick(buttonI,buttonJ, game);
+                    }
+                };
+                tempButton.addActionListener(test);
                 chessBoard.add(tempButton);
             }
         }
         setUpBoard();
 
-        chessBoard.setPreferredSize(new Dimension(400,800));// changed it to preferredSize, Thanks!
-
-        /*
-        frame.getContentPane().add( chessBoard );// adding to content pane will work here. Please read the comment bellow.
-        frame.pack();
-*/
+        chessBoard.setPreferredSize(new Dimension(800,800));// changed it to preferredSize, Thanks!
+    }
 
 
 
+    private void undoOneMove(){
+        if(history.size()==0) {
+            System.out.println("Nothing to undo");
+            return;
+        }
+        System.out.println("trying to undo");
+        currentMove = history.get(currentTurn);
+        history.remove(currentTurn);
+        currentTurn--;
 
+
+        Piece pieceRemovedLast = currentMove.getPieceRemoved();
+        Piece revertPiece = game.remove(currentMove.endX(),currentMove.endY());
+        if(pieceRemovedLast != null){
+           game.place(pieceRemovedLast,currentMove.endX(),currentMove.endY());
+        }
+        game.changeTurn();
+        game.place(revertPiece,currentMove.startX(),currentMove.startY());
+        fullBoardUpdate();
+
+
+    }
+
+    /**
+     * Handles the button click
+     */
+    public void buttonClick(int y, int x, Board board){
+        System.out.println("x:" + x + "y:" + y);
+
+        System.out.println("boolean:" + isStartingClick);
+        if(isStartingClick){
+            if(board.getPiece(x,y)!=null) {
+                startX = x;
+                startY = y;
+                isStartingClick = !isStartingClick;
+            }
+        }
+        else{
+            currentMove = new Move(startX,startY,x,y);
+            if(currentMove.execute(game)){
+                history.add(currentMove);
+                currentTurn++;
+                boardUpdateHelper();
+            }
+            isStartingClick = !isStartingClick;
+
+        }
+
+        String whoseTurn = "";
+        if(game.getWhoseTurn()) {
+            whoseTurn += "White";
+        }
+        else{
+            whoseTurn += "Black";
+        }
+        whoseTurn += "'s turn.";
+        playerTurn.setText(whoseTurn);
 
     }
     /**
      * Initializes the GUI of chess game
      */
     public void init() {
-
         initialize();
+    }
+    private void clearBoard(){
 
+        for(int i = 0; i < 8;i++){
+            for(int j = 0; j < 8; j++){
+                game.remove(i,j);
+            }
+        }
     }
 
+    private void boardUpdateHelper(){
+        fullBoardUpdateHelper(currentMove.startX,currentMove.startY);
+        fullBoardUpdateHelper(currentMove.endX,currentMove.endY);
+    }
+
+    private void fullBoardUpdateHelper(int i, int j){
+        Piece curPiece = game.getPiece(i,j);
+        if(curPiece != null ) {
+            board[i][j].setIcon(curPiece.getIcon(curPiece.getColor()));
+        }
+        else{
+            board[i][j].setIcon(new ImageIcon());
+        }
+    }
+
+    private void fullBoardUpdate(){
+
+       for(int i = 0; i < 8;i++){
+           for(int j = 0; j < 8; j++){
+               fullBoardUpdateHelper(i,j);
+           }
+       }
+    }
+
+    private void setUpBoardTwo() {
+        Piece whitePawn = new Pawn(WHITE);
+        game.place(whitePawn,1,4);
+        fullBoardUpdate();
+    }
     /**
      * Sets up board to a regular chess game
      */
     private void setUpBoard(){
-        Icon whitePawn = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whitePawn.png");
-        Icon whiteRook = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteRook.png");
-        Icon whiteKnight = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteKnight.png");
-        Icon whiteBishop = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteBishop.png");
-        Icon whiteKing = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteKing.png");
-        Icon whiteQueen = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteQueen.png");
-        Icon blackPawn = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackPawn.png");
-        Icon blackRook = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackRook.png");
-        Icon blackKnight = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackKnight.png");
-        Icon blackBishop = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackBishop.png");
-        Icon blackKing = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackKing.png");
-        Icon blackQueen = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackQueen.png");
+
+
+        Piece whitePawn = new Pawn(WHITE);
+        Piece whiteRook = new Rook(WHITE);
+        Piece whiteKnight = new Knight(WHITE);
+        Piece whiteBishop = new Bishop(WHITE);
+        Piece whiteKing = new King(WHITE);
+        Piece whiteQueen = new Queen(WHITE);
+        Piece blackPawn = new Pawn(BLACK);
+        Piece blackRook = new Rook(BLACK);
+        Piece blackKnight = new Knight(BLACK);
+        Piece blackBishop = new Bishop(BLACK);
+        Piece blackKing = new King(BLACK);
+        Piece blackQueen = new Queen(BLACK);
         for(int i = 0; i<8;i++) {
-            board[i][6].setIcon(blackPawn);
+            game.place(blackPawn,i,6);
         }
         for(int i = 0; i<8;i++) {
-            board[i][1].setIcon(whitePawn);
+            game.place(whitePawn,i,1);
         }
+        /*
         Icon temp = new ImageIcon();
 
-       board[4][1].setIcon(temp);
-        //board[4][3].setIcon(whitePawn);
+       board[4][1]=temp;
+        //board[4][3]=whitePawn;
 
-        board[3][6].setIcon(temp);
-        board[3][4].setIcon(whitePawn);
+        board[3][6]=temp;
+        */
+        game.place(whiteRook,0,0);
+        game.place(whiteRook,7,0);
+        game.place(whiteKnight,6,0);
+        game.place(whiteKnight,1,0);
+        game.place(whiteBishop,5,0);
+        game.place(whiteBishop,2,0);
+        game.place(whiteKing,3,0);
+        game.place(whiteQueen,4,0);
 
-        board[2][0].setIcon(whiteRook);
-        board[7][0].setIcon(whiteRook);
-        //board[1][0].setIcon(whiteKnight);
-        board[6][0].setIcon(whiteKnight);
-       // board[2][0].setIcon(whiteBishop);
-        board[5][0].setIcon(whiteBishop);
-        board[4][0].setIcon(whiteQueen);
-        board[1][0].setIcon(whiteKing);
-
-        board[0][7].setIcon(blackRook);
-        board[7][7].setIcon(blackRook);
-        board[1][7].setIcon(blackPawn);
-        board[6][7].setIcon(blackKnight);
-        board[2][7].setIcon(blackBishop);
-        board[5][7].setIcon(blackBishop);
-        board[4][7].setIcon(blackQueen);
-        board[3][7].setIcon(blackKing);
-
-    }
-
-    public void run(){
-
+        game.place(blackRook,0,7);
+        game.place(blackRook,7,7);
+        game.place(blackKnight,6,7);
+        game.place(blackKnight,1,7);
+        game.place(blackBishop,5,7);
+        game.place(blackBishop,2,7);
+        game.place(blackKing,3,7);
+        game.place(blackQueen,4,7);
+        fullBoardUpdate();
     }
 
     public final JComponent getGui() {
         return chessBoard;
     }
 
-    public static void main(String[] args){
+    public final JComponent getToolGUI() { return toolGUI; }
+
+
+
+        public static void main(String[] args){
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 Chessboard cg = new Chessboard();
 
                 JFrame frame = new JFrame("Chessboard");
-                frame.add(cg.getGui());
+
+                frame.add(cg.getToolGUI(),BorderLayout.EAST);
+                frame.add(cg.getGui(),BorderLayout.CENTER);
+
 
                 // Ensures JVM closes aframeter frame(s) closed and
                 // all non-daemon threads are frameinished

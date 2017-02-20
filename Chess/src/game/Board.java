@@ -16,6 +16,8 @@ public class Board{
 	int BKingx,BKingy;
 	int WKingx,WKingy;
 
+	boolean isWhiteTurn = true;
+
 
 	/**
 	 *
@@ -126,6 +128,24 @@ public class Board{
 		return height;
 	}
 
+	/**
+	 * Getter function for if it's white's turn
+	 *
+	 * @return true if white's turn, false for black
+	 */
+
+	public boolean getWhoseTurn(){
+		return isWhiteTurn;
+	}
+
+	/**
+	 * Changes the turn to opposite player
+	 */
+
+	public void changeTurn(){
+		isWhiteTurn = !isWhiteTurn;
+	}
+
 	private ArrayList<Piece> checkPiecesChecking(int x, int y, Piece.Color color){
 		ArrayList<Piece> piecesChecking = new ArrayList<Piece>();
 
@@ -135,6 +155,9 @@ public class Board{
 					continue;
 				if(board[i][j].getColor()==color)
 					continue;
+				if(board[i][j] instanceof King && color == board[i][j].getColor()) {
+					continue;
+				}
 				if (board[i][j].canCapture(new Move(i,j,x,y), this) && board[i][j].getColor() != color) {
 					System.out.println("That would put your king in check");
 					piecesChecking.add(board[i][j]);

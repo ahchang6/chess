@@ -4,6 +4,8 @@ package Pieces;
 import game.Board;
 import game.Move;
 
+import javax.swing.*;
+
 
 public class Rook extends Piece{
 
@@ -87,5 +89,16 @@ public class Rook extends Piece{
 			}
 		}
 		return false;
+	}
+
+	public Icon getIcon(Color color){
+		Icon icon;
+		if(color == Color.WHITE){
+			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/whiteRook.png");
+		}
+		else{
+			icon = new ImageIcon("/home/ahchang6/IdeaProjects/CS242HW0/Assignment1/Chess/src/assets/images/blackRook.png");
+		}
+		return icon;
 	}
 }

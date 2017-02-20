@@ -3,6 +3,8 @@ package Pieces;
 import game.Board;
 import game.Move;
 
+import javax.swing.*;
+
 import static Pieces.Piece.Color.WHITE;
 
 
@@ -86,6 +88,14 @@ public abstract class Piece{
 	 * @param board
 	 * @return True if a piece can block this piece from checking the king
 	 */
+
+
+	/**
+	 *
+	 * @param color
+	 * @return
+	 */
+	public abstract Icon getIcon(Color color);
 
 	//public abstract boolean canBeBlocked(int XofKing, int YofKing, Color color, Board board);
 }

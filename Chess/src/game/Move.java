@@ -1,11 +1,10 @@
-
-
 package game;
 
 import Pieces.King;
 import Pieces.Piece;
 import Pieces.Rook;
-import game.Board;
+
+import java.util.ArrayList;
 
 import static Pieces.Piece.Color.BLACK;
 import static Pieces.Piece.Color.WHITE;
@@ -15,6 +14,7 @@ import static Pieces.Piece.Color.WHITE;
 public class Move{
 	int startX, startY, endX, endY;
     int actionCode;
+    Piece lastPieceRemoved = null;
 
     /**
      * Default constructor for move
@@ -162,6 +162,7 @@ public class Move{
      */
 
 	public boolean execute(Board board) {
+        //edge case checking
         if (startX == -1 || startY == -1 || endX == -1 || endY == -1)
             return false;
 
@@ -180,6 +181,21 @@ public class Move{
         }
 
         Piece piece = board.getPiece(startX, startY);
+        if(board.getWhoseTurn() && piece.getColor() == BLACK) {
+            System.out.println("It is not Black's turn!");
+            return false;
+        }
+
+        if(!board.getWhoseTurn() && piece.getColor() == WHITE) {
+            System.out.println("It is not White's turn!");
+            return false;
+        }
+
+        //edge case checking end
+
+        Piece pieceRemoved = null;
+        if(piece == null)
+            return false;
 
         if (board.getPiece(endX, endY) != null) {
             System.out.println(piece.getColor());
@@ -191,7 +207,7 @@ public class Move{
             if (!board.getPiece(startX, startY).canCapture(this, board)) {
                 return false;
             }
-            board.remove(endX, endY);
+            pieceRemoved = board.remove(endX, endY);
         } else {
             if (!piece.canMoveTo(this, board)) {
                 return false;
@@ -199,19 +215,25 @@ public class Move{
         }
 
         Piece placeHolder = board.remove(startX, startY);
+        board.place(piece , endX, endY);
         //check if moving piece will cause to be in check
         for (int i = 0; i < board.getWidth(); i++) {
             for (int j = 0; j < board.getHeight(); j++) {
                 if (board.getPiece(i, j) != null)
                     if (board.getPiece(i, j) instanceof King && board.getPiece(i, j).getColor().equals(placeHolder.getColor()))
                         if (board.checkCheck(i, j, placeHolder.getColor())) {
+                            board.remove(endX,endY);
                             board.place(placeHolder, startX, startY);
+                            if(pieceRemoved != null){
+                                board.place(pieceRemoved, endX,endY);
+                            }
                             return false;
                         }
             }
         }
-
+        lastPieceRemoved = pieceRemoved;
         board.place(placeHolder, endX, endY);
+        board.changeTurn();
         /*
         if(XofKing!=-1) {
             if (placeHolder.getColor() == BLACK){
@@ -224,6 +246,9 @@ public class Move{
         return true;
     }
 
+    public Piece getPieceRemoved(){
+        return lastPieceRemoved;
+    }
 
     public int startX(){
 		return startX;
